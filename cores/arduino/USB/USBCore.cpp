@@ -217,10 +217,10 @@ uint32_t USBD_Send(uint32_t ep, const void* d, uint32_t len)
 	return r;
 }
 
-int _cmark;
-int _cend;
+uint16_t _cmark;
+uint16_t _cend;
 
-void USBD_InitControl(int end)
+void USBD_InitControl(uint16_t end)
 {
 	_cmark = 0;
 	_cend = end;
@@ -300,7 +300,7 @@ bool USBD_ClassInterfaceRequest(USBSetup& setup)
 	return false;
 }
 
-int USBD_SendInterfaces(void)
+uint8_t USBD_SendInterfaces(void)
 {
 	uint8_t interfaces = 0;
 
@@ -340,12 +340,13 @@ static bool USBD_SendConfiguration(int maxlen)
 	//	Count and measure interfaces
 	USBD_InitControl(0);
 	//TRACE_CORE(printf("=> USBD_SendConfiguration _cmark1=%d\r\n", _cmark);)
-	int interfaces = USBD_SendInterfaces();
+	uint8_t interfaces = USBD_SendInterfaces();
 	//TRACE_CORE(printf("=> USBD_SendConfiguration _cmark2=%d\r\n", _cmark);)
 	//TRACE_CORE(printf("=> USBD_SendConfiguration sizeof=%d\r\n", sizeof(ConfigDescriptor));)
 
+	uint16_t clen = _cmark + (uint16_t)(sizeof(ConfigDescriptor));
 _Pragma("pack(1)")
-	ConfigDescriptor config = D_CONFIG(_cmark + sizeof(ConfigDescriptor),interfaces);
+	ConfigDescriptor config = D_CONFIG(clen, interfaces);
 _Pragma("pack()")
 	//TRACE_CORE(printf("=> USBD_SendConfiguration clen=%d\r\n", config.clen);)
 
@@ -363,12 +364,13 @@ static bool USBD_SendOtherConfiguration(int maxlen)
 	//	Count and measure interfaces
 	USBD_InitControl(0);
 	//TRACE_CORE(printf("=> USBD_SendConfiguration _cmark1=%d\r\n", _cmark);)
-	int interfaces = USBD_SendOtherInterfaces();
+	uint8_t interfaces = USBD_SendOtherInterfaces();
 	//TRACE_CORE(printf("=> USBD_SendConfiguration _cmark2=%d\r\n", _cmark);)
 	//TRACE_CORE(printf("=> USBD_SendConfiguration sizeof=%d\r\n", sizeof(ConfigDescriptor));)
 
+	uint16_t clen = _cmark + (uint16_t)(sizeof(ConfigDescriptor));
 _Pragma("pack(1)")
-	ConfigDescriptor config = D_OTHERCONFIG(_cmark + sizeof(ConfigDescriptor),interfaces);
+	ConfigDescriptor config = D_OTHERCONFIG(clen, interfaces);
 _Pragma("pack()")
 	//TRACE_CORE(printf("=> USBD_SendConfiguration clen=%d\r\n", config.clen);)
 
@@ -528,7 +530,6 @@ static void Test_Mode_Support( uint8_t wIndex )
 			UOTGHS->UOTGHS_DEVEPTIDR[2] = UOTGHS_DEVEPTIDR_FIFOCONC;
 			for(;;);
 			// no break
-//      break;
 
 		case 1:
 			//Test mode Test_J:
@@ -540,7 +541,6 @@ static void Test_Mode_Support( uint8_t wIndex )
 			UOTGHS->UOTGHS_DEVCTRL |= UOTGHS_DEVCTRL_TSTJ;
 			for(;;);
 			// no break
-//      break;
 
 		case 2:
 			//Test mode Test_K:
@@ -552,7 +552,6 @@ static void Test_Mode_Support( uint8_t wIndex )
 			UOTGHS->UOTGHS_DEVCTRL |= UOTGHS_DEVCTRL_TSTK;
 			for(;;);
 			// no break
-//		break;
 
 		case 3:
 			//Test mode Test_SE0_NAK:
@@ -589,7 +588,6 @@ static void Test_Mode_Support( uint8_t wIndex )
 							   | UOTGHS_DEVIDR_DMA_6;
 			for(;;);
 			// no break
-//		break;
 	}
 }
 
@@ -827,15 +825,13 @@ void USBD_Flush(uint32_t ep)
 		UDD_ReleaseTX(ep);
 }
 
-//	VBUS or counting frames
-//	Any frame counting?
+// Check VBUS state. Checking if USB frames are counting or not is no
+// reliable way to detect if a USB device is attached or not.
 uint32_t USBD_Connected(void)
 {
-	uint8_t f = UDD_GetFrameNumber();
-
-	delay(3);
-
-	return f != UDD_GetFrameNumber();
+	// SAM3X BUG: VBUS bit is bit 13, not 12 (at least that changes as expected when VBUS does)
+	const uint32_t UOTG_SR_VBUS_REAL = (1 << 12);
+	return (UOTGHS->UOTGHS_SR & UOTG_SR_VBUS_REAL);
 }
 
 
@@ -882,7 +878,6 @@ bool USBDevice_::detach(void)
 }
 
 //	Check for interrupts
-//	TODO: VBUS detection
 bool USBDevice_::configured()
 {
 	return _usbConfiguration;

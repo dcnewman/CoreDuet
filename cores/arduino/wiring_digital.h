@@ -31,7 +31,11 @@ extern "C" {
  * \param debounceCutoff Debounce cutoff frequency (only one can be set per PIO)
  */
 extern void pinModeDuet(uint32_t dwPin, uint32_t dwMode, uint32_t debounceCutoff);
-extern void pinMode(uint32_t dwPin, uint32_t dwMode);
+
+inline void pinMode(uint32_t dwPin, uint32_t dwMode)
+{
+	pinModeDuet(dwPin, dwMode, 0);
+}
 
 /**
  * \brief Write a HIGH or a LOW value to a digital pin.

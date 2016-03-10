@@ -60,6 +60,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/system/CMSIS/Device/ATMEL}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/system/CMSIS/Device/ATMEL/sam3xa/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/system/libsam}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/system/libsam/include}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1183435331" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__SAM3X8E__"/>
@@ -77,18 +78,6 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.622321091" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1545746239" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
-						</toolChain>
-					</folderInfo>
-					<folderInfo id="cdt.managedbuild.config.gnu.cross.lib.release.686388427.1474472839" name="/" resourcePath="system/CMSIS/Device/ATMEL/sam3xa/source/as_gcc">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.lib.release.1018192954" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.lib.release" unusedChildren="">
-							<option id="cdt.managedbuild.option.gnu.cross.prefix.1182246319.800422809" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix.1182246319"/>
-							<option id="cdt.managedbuild.option.gnu.cross.path.1595251843.643826309" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path.1595251843"/>
-							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.861465528" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler.804734849"/>
-							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1731468632" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler.880821276"/>
-							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1956133283" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker.1834371208"/>
-							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.404680252" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker.1200213984"/>
-							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1388980343" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver.204550189"/>
-							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.2034227014" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler.622321091"/>
 						</toolChain>
 					</folderInfo>
 					<folderInfo id="cdt.managedbuild.config.gnu.cross.lib.release.686388427.1320833193" name="/" resourcePath="system/libsam/build_iar">

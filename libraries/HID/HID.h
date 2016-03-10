@@ -49,9 +49,9 @@ typedef struct __attribute__((packed)) {
 
 class HIDDescriptorListNode {
 public:
-  HIDDescriptorListNode *next = NULL;
+  HIDDescriptorListNode *next;
   const HID_Descriptor * cb;
-  HIDDescriptorListNode(const HID_Descriptor *ncb) {cb = ncb;}
+  HIDDescriptorListNode(const HID_Descriptor *ncb) : next(nullptr), cb(ncb) {}
 };
 
 class HID_

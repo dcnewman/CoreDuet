@@ -18,18 +18,14 @@
 
 #include "Arduino.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 static int _readResolution = 10;
 static int _writeResolution = 8;
 
-void analogReadResolution(int res) {
+extern "C" void analogReadResolution(int res) {
 	_readResolution = res;
 }
 
-void analogWriteResolution(int res) {
+extern "C" void analogWriteResolution(int res) {
 	_writeResolution = res;
 }
 
@@ -44,12 +40,12 @@ static inline uint32_t mapResolution(uint32_t value, uint32_t from, uint32_t to)
 
 eAnalogReference analog_reference = AR_DEFAULT;
 
-void analogReference(eAnalogReference ulMode)
+extern "C" void analogReference(eAnalogReference ulMode)
 {
 	analog_reference = ulMode;
 }
 
-uint32_t analogRead(uint32_t ulPin)
+extern "C" uint32_t analogRead(uint32_t ulPin)
 {
   uint32_t ulValue = 0;
   uint32_t ulChannel;
@@ -149,9 +145,9 @@ uint32_t analogRead(uint32_t ulPin)
 
 			// Enable the corresponding channel
 			if (ulChannel != latestSelectedChannel) {
-				adc_enable_channel( ADC, ulChannel );
+				adc_enable_channel( ADC, (adc_channel_num_t)ulChannel );
 				if ( latestSelectedChannel != (uint32_t)-1 )
-					adc_disable_channel( ADC, latestSelectedChannel );
+					adc_disable_channel( ADC, (adc_channel_num_t)latestSelectedChannel );
 				latestSelectedChannel = ulChannel;
 			}
 
@@ -222,7 +218,7 @@ static void PWMC_ConfigureChannel_fixed( Pwm* pPwm, uint32_t ul_channel, uint32_
  * should work, and non hardware PWM pin will default to digitalWrite
  */
 
-void analogWriteDuet(uint32_t ulPin, uint32_t ulValue, uint16_t freq)
+extern "C" void analogWriteDuet(uint32_t ulPin, uint32_t ulValue, uint16_t freq)
 {
 	if (ulPin > MaxPinNumber)
 	{
@@ -233,12 +229,13 @@ void analogWriteDuet(uint32_t ulPin, uint32_t ulValue, uint16_t freq)
 		ulValue = 255;
 	}
 
-	uint32_t attr = g_APinDescription[ulPin].ulPinAttribute;
+	const PinDescription& pinDesc = g_APinDescription[ulPin];
+	const uint32_t attr = pinDesc.ulPinAttribute;
 	if ((attr & PIN_ATTR_ANALOG) == PIN_ATTR_ANALOG)
 	{
-		EAnalogChannel channel = g_APinDescription[ulPin].ulADCChannelNumber;
+		const EAnalogChannel channel = pinDesc.ulADCChannelNumber;
 		if (channel == DA0 || channel == DA1) {
-			uint32_t chDACC = ((channel == DA0) ? 0 : 1);
+			const uint32_t chDACC = ((channel == DA0) ? 0 : 1);
 			if (dacc_get_channel_status(DACC_INTERFACE) == 0) {
 				/* Enable clock for DACC_INTERFACE */
 				pmc_enable_periph_clk(DACC_INTERFACE_ID);
@@ -277,7 +274,7 @@ void analogWriteDuet(uint32_t ulPin, uint32_t ulValue, uint16_t freq)
 
 	if ((attr & PIN_ATTR_PWM) == PIN_ATTR_PWM)
 	{
-		uint32_t chan = g_APinDescription[ulPin].ulPWMChannel;
+		const uint32_t chan = pinDesc.ulPWMChannel;
 		if (freq == 0)
 		{
 			PWMChanFreq[chan] = freq;
@@ -297,10 +294,10 @@ void analogWriteDuet(uint32_t ulPin, uint32_t ulValue, uint16_t freq)
 			bool useFastClock = (freq >= PwmFastClock/65535);
 			uint16_t period = ((useFastClock) ? PwmFastClock : PwmSlowClock)/freq - 1;
 			// Setup PWM for this PWM channel
-			PIO_Configure(g_APinDescription[ulPin].pPort,
-					g_APinDescription[ulPin].ulPinType,
-					g_APinDescription[ulPin].ulPin,
-					g_APinDescription[ulPin].ulPinConfiguration);
+			PIO_Configure(pinDesc.pPort,
+					pinDesc.ulPinType,
+					pinDesc.ulPin,
+					pinDesc.ulPinConfiguration);
 			PWMC_ConfigureChannel_fixed(PWM_INTERFACE, chan, (useFastClock) ? PWM_CMR_CPRE_CLKB : PWM_CMR_CPRE_CLKA, 0, 0);
 			PWMC_SetPeriod(PWM_INTERFACE, chan, period);
 			PWMC_SetDutyCycle(PWM_INTERFACE, chan, (ulValue * (uint32_t)period)/255);
@@ -321,13 +318,8 @@ void analogWriteDuet(uint32_t ulPin, uint32_t ulValue, uint16_t freq)
 	}
 }
 
-void analogWrite( uint32_t ulPin, uint32_t ulValue )
-{
-	analogWriteDuet(ulPin, ulValue, false);
-}
-
 // Convert an Arduino Due analog pin number to the corresponding ADC channel number
-enum adc_channel_num_t PinToAdcChannel(int pin)
+extern "C" enum adc_channel_num_t PinToAdcChannel(int pin)
 {
 	if (pin < A0)
 	{
@@ -336,6 +328,4 @@ enum adc_channel_num_t PinToAdcChannel(int pin)
 	return (enum adc_channel_num_t) (int) g_APinDescription[pin].ulADCChannelNumber;
 }
 
-#ifdef __cplusplus
-}
-#endif
+// End
