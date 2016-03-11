@@ -5,6 +5,7 @@ from os.path import join, expanduser, isfile
 sys.path.append('./scons_tools')
 
 target_name   = 'libCoreDuet'
+variant_dir   = 'Release'
 arduino_board = 'arduino_due_x'
 sam_arch      = 'sam3xa'
 
@@ -81,6 +82,12 @@ flags = [ '-Dprintf=iprintf' ]
 cflags = [ ] + flags
 cxxflags = [ ] + flags
 
+core_dirs = [ 'cores',
+              'libraries',
+              'system',
+              'variants' ]
+clean_dirs = [ join(variant_dir, i) for i in core_dirs ]
+
 # Include file directories
 include_paths = [
     'cores/arduino',
@@ -92,7 +99,11 @@ include_paths = [
     'system/libsam/include' ]
 
 # Initialize an environment
-VariantDir('Release', './', 'duplicate=0')
+VariantDir(variant_dir, './', 'duplicate=0')
+
+# Make a clean command remove the variant sources
+Clean('.', clean_dirs)
+
 env=Environment( tools = ['default', 'ar', 'g++', 'gcc', 'arduino'],
                  toolpath = ['./scons_tools'],
                  CPPPATH = include_paths,
@@ -146,19 +157,16 @@ ignore_dirs = [
     'system/CMSIS/Device/ARM/ARMCM0' ]
 
 # Generate the list of source directories to consider
-src_dirs = list_dirs(['cores',
-                      'libraries',
-                      'system',
-                      'variants'], ignore_dirs)
+src_dirs = list_dirs(core_dirs, ignore_dirs)
 
 # Generate the list of source files to compile
 srcs = []
 for dir in src_dirs:
     srcs += \
-        env.Glob(join('Release', dir, '*.c')) + \
-        env.Glob(join('Release', dir, '*.cpp')) + \
-        env.Glob(join('Release', dir, '*.S'))
+        env.Glob(join(variant_dir, dir, '*.c')) + \
+        env.Glob(join(variant_dir, dir, '*.cpp')) + \
+        env.Glob(join(variant_dir, dir, '*.S'))
 
 # Now generate the target library
 objs = env.Object(srcs)
-env.Library('Release/' + target_name, objs)
+env.Library(join(variant_dir, target_name), objs)
