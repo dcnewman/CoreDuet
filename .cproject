@@ -42,17 +42,19 @@
 									<listOptionValue builtIn="false" value="__SAM3X8E__"/>
 									<listOptionValue builtIn="false" value="F_CPU=84000000"/>
 									<listOptionValue builtIn="false" value="USBCON"/>
+									<listOptionValue builtIn="false" value="USB_MANUFACTURER=\&quot;Think3DPrint3D\&quot;"/>
+									<listOptionValue builtIn="false" value="USB_PRODUCT=\&quot;Duet\&quot;"/>
 									<listOptionValue builtIn="false" value="USB_VID=0x2341"/>
 									<listOptionValue builtIn="false" value="USB_PID=0x003e"/>
 									<listOptionValue builtIn="false" value="printf=iprintf"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.1287224327" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -std=gnu99 -fmessage-length=0 -mcpu=cortex-m3 -mthumb" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.1287224327" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -std=gnu99 -mcpu=cortex-m3 -mthumb -ffunction-sections -fdata-sections -nostdlib --param max-inline-insns-single=500" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1602088804" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.880821276" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
 								<option id="gnu.cpp.compiler.option.optimization.level.1010808662" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.more" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1839934475" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1945780634" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -std=gnu++11 -fmessage-length=0 -fno-rtti -fno-exceptions -mcpu=cortex-m3 -mthumb" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.1945780634" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -std=gnu++11 -mcpu=cortex-m3 -mthumb -ffunction-sections -fdata-sections -fno-threadsafe-statics -fno-rtti -fno-exceptions -nostdlib --param max-inline-insns-single=500" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1198563125" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cores/arduino}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/system/CMSIS/CMSIS/Include}&quot;"/>
@@ -66,6 +68,8 @@
 									<listOptionValue builtIn="false" value="__SAM3X8E__"/>
 									<listOptionValue builtIn="false" value="F_CPU=84000000"/>
 									<listOptionValue builtIn="false" value="USBCON"/>
+									<listOptionValue builtIn="false" value="USB_MANUFACTURER=\&quot;Think3DPrint3D\&quot;"/>
+									<listOptionValue builtIn="false" value="USB_PRODUCT=\&quot;Duet\&quot;"/>
 									<listOptionValue builtIn="false" value="USB_VID=0x2341"/>
 									<listOptionValue builtIn="false" value="USB_PID=0x003e"/>
 									<listOptionValue builtIn="false" value="printf=iprintf"/>
