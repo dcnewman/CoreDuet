@@ -427,6 +427,14 @@ def generate(env):
         info['upload.native_usb'] = '$NATIVE'
         info['serial.port.file'] = '$PORT'
 
+        doIncludes = True
+        if not (options is None):
+            if 'includes' in options:
+                doIncludes = options['includes']
+
+        if not doIncludes:
+            info['compiler.libsam.c.flags'] = ''
+                
         # Now process all the substitution strings in the table
         mungTable(info)
 
@@ -535,14 +543,15 @@ def generate(env):
                                     'variants', '$VARIANT'),
                 CORE_DIR    = join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',
                                    version_path) )
-            env.Append( CPPPATH = [
-                    join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',
-                         version_path, 'cores', 'arduino'),
-                    join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',
-                         version_path, 'cores', 'arduino', 'avr'),
-                    join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',
-                         version_path, 'cores', 'arduino', 'USB'),
-                    info['build.variant.path'] ] )
+            if doIncludes:
+                env.Append( CPPPATH = [
+                        join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',
+                             version_path, 'cores', 'arduino'),
+                        join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',
+                             version_path, 'cores', 'arduino', 'avr'),
+                        join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',
+                             version_path, 'cores', 'arduino', 'USB'),
+                        info['build.variant.path'] ] )
         else:
             env.SetDefault(
                 VARIANT_PATH = join('$ARDUINO_HOME', 'hardware', 'arduino',
@@ -552,14 +561,15 @@ def generate(env):
             if 'build.variant_system_lib' in info:
                 env.SetDefault(
                     VARIANT_SYSLIB = info['build.variant_system_lib'])
-            env.Append( CPPPATH = [
-                    join('$ARDUINO_HOME', 'hardware', 'arduino',
-                         '$ARDUINO_ARCH','cores', 'arduino'),
-                    join('$ARDUINO_HOME', 'hardware', 'arduino',
-                         '$ARDUINO_ARCH', 'cores', 'arduino', 'avr'),
-                    join('$ARDUINO_HOME', 'hardware', 'arduino',
-                         '$ARDUINO_ARCH', 'cores', 'arduino', 'USB'),
-                    info['build.variant.path'] ] )
+            if doIncludes:
+                env.Append( CPPPATH = [
+                        join('$ARDUINO_HOME', 'hardware', 'arduino',
+                             '$ARDUINO_ARCH','cores', 'arduino'),
+                        join('$ARDUINO_HOME', 'hardware', 'arduino',
+                             '$ARDUINO_ARCH', 'cores', 'arduino', 'avr'),
+                        join('$ARDUINO_HOME', 'hardware', 'arduino',
+                             '$ARDUINO_ARCH', 'cores', 'arduino', 'USB'),
+                        info['build.variant.path'] ] )
 
         # Set binaries to use
         if 'compiler.path' in info:
@@ -722,7 +732,7 @@ def generate(env):
     def ArduinoLibrary(env, name, path=None):
         '''
         Build a library. If path is not given, it is assumed to be a builtin
-        arduino library. This adds the path to the inclide path, and builds
+        arduino library. This adds the path to the include path, and builds
         all .c and .cpp files from path and path/utility into a library.
         '''
         full_name = join('$BUILD_DIR', 'libraries', name)

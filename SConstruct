@@ -76,7 +76,8 @@ if have_tools:
     os.environ['ARDUINO_TOOLS'] = arduino_tools
 
 # Flags common to both compilers
-flags = [ '-Dprintf=iprintf' ]
+flags = [
+	  '-Dprintf=iprintf' ]
 
 # C & C++ compiler flags
 cflags = [ ] + flags
@@ -111,16 +112,9 @@ env=Environment( tools = ['default', 'ar', 'g++', 'gcc', 'arduino'],
                  LIBPATH = ['.'] )
 
 drop_list = [
-   ('-ffunction-sections', 0),
-   ('-fdata-sections', 0),
-   ('-nostdlib', 0),
-   ('-fno-threadsafe-statics', 0),
-   ('--param', 1),
    ('-DARDUINO-158', 0),
    ('-DARDUINO_SAM_DUE', 0),
    ('-DARDUINO_ARCH_SAM', 0),
-   ('\'-DUSB_Product="Arduino Due"\'', 0),
-   ('\'-DUSB_MANUFACTURER="Unknown"\'', 0),
    ('-g', 0),
    ('-o', 1),   # Remove -o and single argument following it
    ('-w', 0),   # Yeah, Arduino suppresses all warnings!  They should fix their own!
@@ -128,11 +122,14 @@ drop_list = [
 
 options = {
     'symlinks' : False,
+	'includes' : False,
     'cc_flags_drop_list'  : drop_list,
     'cxx_flags_drop_list' : drop_list }
 
 # Now set up all the compiler paths and switches
 env.ConfigureBoard(arduino_version, arduino_arch, arduino_board, options)
+
+env.Replace( CPPPATH = include_paths )
 
 # Add in our compiler flags
 env.Append( CXXFLAGS = cxxflags, CFLAGS = cflags )
