@@ -49,3 +49,12 @@ Temporary Items
 # Object and debug files
 .d
 .o
+
+# Python droppings
+*.pyc
+
+# Scons leftovers
+.sconsign*
+
+# Emacs backup files
+*~
