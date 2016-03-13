@@ -68,7 +68,7 @@
 
 #if (SAM3XA_SERIES)
 #include "include/can.h"
-//#include "include/emac.h"
+#include "include/emac.h"
 #include "include/trng.h"
 #include "include/uotghs_device.h"
 #include "include/uotghs_host.h"
