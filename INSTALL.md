@@ -27,13 +27,6 @@ This fork of the CoreDuet sources may also be built using the
 
          ~/.rrf_arduino_paths.py
 
-   For Arduino 1.6 and later, `arduino_tools` must be specified.  **The
-   definitions must reflect the directory to which the Arduino app's
-   "Boards Manager" installs supplementary tools.**  For example, even
-   if you have installed version 1.6.6 of the Arduino app installed, the
-   tools for SAM boards may well be version 1.6.5.  It is the vesion of
-   the tools which matters: they are used to locate on disk the gcc toolchain.
-
 6. From the top-level CoreDuet repository directory, build the
    firmware with the command
 
