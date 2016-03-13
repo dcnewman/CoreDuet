@@ -392,125 +392,82 @@ void serialEventRun(void)
 
 // ----------------------------------------------------------------------------
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+extern "C" void __libc_init_array(void);
 
-void __libc_init_array(void);
-
-void init( void )
+static void ConfigurePin(const PinDescription& pinDesc)
 {
-  SystemInit();
-
-  // Set Systick to 1ms interval, common to all SAM3 variants
-  if (SysTick_Config(SystemCoreClock / 1000))
-  {
-    // Capture error
-    while (true);
-  }
-
-  // Initialize C library
-  __libc_init_array();
-
-  // Disable pull-up on every pin
-  for (size_t i = 0; i < PINS_COUNT; i++)
-  {
-	  digitalWrite(i, LOW);
-  }
-
-  // Enable parallel access on PIO output data registers
-  PIOA->PIO_OWER = 0xFFFFFFFF;
-  PIOB->PIO_OWER = 0xFFFFFFFF;
-  PIOC->PIO_OWER = 0xFFFFFFFF;
-  PIOD->PIO_OWER = 0xFFFFFFFF;
-
-  // Initialize Serial port U(S)ART pins
-  PIO_Configure(
-    g_APinDescription[PINS_UART].pPort,
-    g_APinDescription[PINS_UART].ulPinType,
-    g_APinDescription[PINS_UART].ulPin,
-    g_APinDescription[PINS_UART].ulPinConfiguration);
-  digitalWrite(0, HIGH); // Enable pullup for RX0
-  PIO_Configure(
-    g_APinDescription[PINS_USART0].pPort,
-    g_APinDescription[PINS_USART0].ulPinType,
-    g_APinDescription[PINS_USART0].ulPin,
-    g_APinDescription[PINS_USART0].ulPinConfiguration);
-  PIO_Configure(
-    g_APinDescription[PINS_USART1].pPort,
-    g_APinDescription[PINS_USART1].ulPinType,
-    g_APinDescription[PINS_USART1].ulPin,
-    g_APinDescription[PINS_USART1].ulPinConfiguration);
-  PIO_Configure(
-    g_APinDescription[PINS_USART3].pPort,
-    g_APinDescription[PINS_USART3].ulPinType,
-    g_APinDescription[PINS_USART3].ulPin,
-    g_APinDescription[PINS_USART3].ulPinConfiguration);
-
-  // Initialize USB pins
-  PIO_Configure(
-    g_APinDescription[PINS_USB].pPort,
-    g_APinDescription[PINS_USB].ulPinType,
-    g_APinDescription[PINS_USB].ulPin,
-    g_APinDescription[PINS_USB].ulPinConfiguration);
-
-  // Initialize CAN pins
-  PIO_Configure(
-    g_APinDescription[PINS_CAN0].pPort,
-    g_APinDescription[PINS_CAN0].ulPinType,
-    g_APinDescription[PINS_CAN0].ulPin,
-    g_APinDescription[PINS_CAN0].ulPinConfiguration);
-  PIO_Configure(
-    g_APinDescription[PINS_CAN1].pPort,
-    g_APinDescription[PINS_CAN1].ulPinType,
-    g_APinDescription[PINS_CAN1].ulPin,
-    g_APinDescription[PINS_CAN1].ulPinConfiguration);
-
-  // Initialize Analog Controller
-  pmc_enable_periph_clk(ID_ADC);
-  adc_init(ADC, SystemCoreClock, ADC_FREQ_MIN, ADC_STARTUP_FAST);	// Reduce clock rate
-  adc_configure_timing(ADC, 3, ADC_SETTLING_TIME_3, 1);			// Add transfer time
-  adc_configure_trigger(ADC, ADC_TRIG_SW, 0);				// Disable hardware trigger
-  adc_disable_interrupt(ADC, 0xFFFFFFFF);				// Disable all ADC interrupts
-  adc_disable_all_channel(ADC);
-
-  // Initialize analogOutput module
-  //analogOutputInit();
-
-  // Initialize HSMCI pins
-  PIO_Configure(g_APinDescription[PIN_HSMCI_MCCDA_GPIO].pPort,g_APinDescription[PIN_HSMCI_MCCDA_GPIO].ulPinType,g_APinDescription[PIN_HSMCI_MCCDA_GPIO].ulPin,g_APinDescription[PIN_HSMCI_MCCDA_GPIO].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_HSMCI_MCCK_GPIO].pPort,g_APinDescription[PIN_HSMCI_MCCK_GPIO].ulPinType,g_APinDescription[PIN_HSMCI_MCCK_GPIO].ulPin,g_APinDescription[PIN_HSMCI_MCCK_GPIO].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_HSMCI_MCDA0_GPIO].pPort,g_APinDescription[PIN_HSMCI_MCDA0_GPIO].ulPinType,g_APinDescription[PIN_HSMCI_MCDA0_GPIO].ulPin,g_APinDescription[PIN_HSMCI_MCDA0_GPIO].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_HSMCI_MCDA1_GPIO].pPort,g_APinDescription[PIN_HSMCI_MCDA1_GPIO].ulPinType,g_APinDescription[PIN_HSMCI_MCDA1_GPIO].ulPin,g_APinDescription[PIN_HSMCI_MCDA1_GPIO].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_HSMCI_MCDA2_GPIO].pPort,g_APinDescription[PIN_HSMCI_MCDA2_GPIO].ulPinType,g_APinDescription[PIN_HSMCI_MCDA2_GPIO].ulPin,g_APinDescription[PIN_HSMCI_MCDA2_GPIO].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_HSMCI_MCDA3_GPIO].pPort,g_APinDescription[PIN_HSMCI_MCDA3_GPIO].ulPinType,g_APinDescription[PIN_HSMCI_MCDA3_GPIO].ulPin,g_APinDescription[PIN_HSMCI_MCDA3_GPIO].ulPinConfiguration);
-  //set pullups (not on clock!)
-  digitalWrite(PIN_HSMCI_MCCDA_GPIO, HIGH);
-  digitalWrite(PIN_HSMCI_MCDA0_GPIO, HIGH);
-  digitalWrite(PIN_HSMCI_MCDA1_GPIO, HIGH);
-  digitalWrite(PIN_HSMCI_MCDA2_GPIO, HIGH);
-  digitalWrite(PIN_HSMCI_MCDA3_GPIO, HIGH);
-
-  // Initialize Ethernet pins
-  PIO_Configure(g_APinDescription[PIN_EMAC_EREFCK].pPort, g_APinDescription[PIN_EMAC_EREFCK].ulPinType, g_APinDescription[PIN_EMAC_EREFCK].ulPin, g_APinDescription[PIN_EMAC_EREFCK].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_ETXEN].pPort, g_APinDescription[PIN_EMAC_ETXEN].ulPinType, g_APinDescription[PIN_EMAC_ETXEN].ulPin, g_APinDescription[PIN_EMAC_ETXEN].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_ETX0].pPort, g_APinDescription[PIN_EMAC_ETX0].ulPinType, g_APinDescription[PIN_EMAC_ETX0].ulPin, g_APinDescription[PIN_EMAC_ETX0].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_ETX1].pPort, g_APinDescription[PIN_EMAC_ETX1].ulPinType, g_APinDescription[PIN_EMAC_ETX1].ulPin, g_APinDescription[PIN_EMAC_ETX1].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_ECRSDV].pPort, g_APinDescription[PIN_EMAC_ECRSDV].ulPinType, g_APinDescription[PIN_EMAC_ECRSDV].ulPin, g_APinDescription[PIN_EMAC_ECRSDV].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_ERX0].pPort, g_APinDescription[PIN_EMAC_ERX0].ulPinType, g_APinDescription[PIN_EMAC_ERX0].ulPin, g_APinDescription[PIN_EMAC_ERX0].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_ERX1].pPort, g_APinDescription[PIN_EMAC_ERX1].ulPinType, g_APinDescription[PIN_EMAC_ERX1].ulPin, g_APinDescription[PIN_EMAC_ERX1].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_ERXER].pPort, g_APinDescription[PIN_EMAC_ERXER].ulPinType, g_APinDescription[PIN_EMAC_ERXER].ulPin, g_APinDescription[PIN_EMAC_ERXER].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_EMDC].pPort, g_APinDescription[PIN_EMAC_EMDC].ulPinType, g_APinDescription[PIN_EMAC_EMDC].ulPin, g_APinDescription[PIN_EMAC_EMDC].ulPinConfiguration);
-  PIO_Configure(g_APinDescription[PIN_EMAC_EMDIO].pPort, g_APinDescription[PIN_EMAC_EMDIO].ulPinType, g_APinDescription[PIN_EMAC_EMDIO].ulPin, g_APinDescription[PIN_EMAC_EMDIO].ulPinConfiguration);
-
-  // Initialize TRNG
-  pmc_enable_periph_clk(ID_TRNG);
-  TRNG->TRNG_IDR = TRNG_IDR_DATRDY;				// Disable all interrupts
-  TRNG->TRNG_CR = TRNG_CR_KEY(0x524e47) | TRNG_CR_ENABLE;	// Enable TRNG with security key (required)
+	PIO_Configure(pinDesc.pPort, pinDesc.ulPinType, pinDesc.ulPin, pinDesc.ulPinConfiguration);
 }
 
-#ifdef __cplusplus
+extern "C" void init( void )
+{
+	SystemInit();
+
+	// Set Systick to 1ms interval, common to all SAM3 variants
+	if (SysTick_Config(SystemCoreClock / 1000))
+	{
+		// Capture error
+		while (true);
+	}
+
+	// Initialize C library
+	__libc_init_array();
+
+	// Disable pull-up on every pin
+	for (size_t i = 0; i < PINS_COUNT; i++)
+	{
+		setPullup(i, false);
+	}
+
+	// Enable parallel access on PIO output data registers
+//	PIOA->PIO_OWER = 0xFFFFFFFF;
+//	PIOB->PIO_OWER = 0xFFFFFFFF;
+//	PIOC->PIO_OWER = 0xFFFFFFFF;
+//	PIOD->PIO_OWER = 0xFFFFFFFF;
+
+	// Initialize Serial port U(S)ART pins
+	ConfigurePin(g_APinDescription[PINS_UART]);
+	setPullup(0, true); 									// Enable pullup for RX0
+	ConfigurePin(g_APinDescription[PINS_USART0]);
+
+	// Initialize USB pins
+	ConfigurePin(g_APinDescription[PINS_USB]);
+
+	// Initialize Analog Controller
+	pmc_enable_periph_clk(ID_ADC);
+	adc_init(ADC, SystemCoreClock, ADC_FREQ_MIN, ADC_STARTUP_FAST);	// Reduce clock rate
+	adc_configure_timing(ADC, 3, ADC_SETTLING_TIME_3, 1);			// Add transfer time
+	adc_configure_trigger(ADC, ADC_TRIG_SW, 0);						// Disable hardware trigger
+	adc_disable_interrupt(ADC, 0xFFFFFFFF);							// Disable all ADC interrupts
+	adc_disable_all_channel(ADC);
+
+	// Initialize analogOutput module
+	//analogOutputInit();
+
+	// Initialize HSMCI pins
+	ConfigurePin(g_APinDescription[PIN_HSMCI_MCCDA_GPIO]);
+	ConfigurePin(g_APinDescription[PIN_HSMCI_MCCK_GPIO]);
+	ConfigurePin(g_APinDescription[PIN_HSMCI_MCDA0_GPIO]);
+	ConfigurePin(g_APinDescription[PIN_HSMCI_MCDA1_GPIO]);
+	ConfigurePin(g_APinDescription[PIN_HSMCI_MCDA2_GPIO]);
+	ConfigurePin(g_APinDescription[PIN_HSMCI_MCDA3_GPIO]);
+
+	// Initialize Ethernet pins
+	ConfigurePin(g_APinDescription[PIN_EMAC_EREFCK]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_ETXEN]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_ETX0]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_ETX1]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_ECRSDV]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_ERX0]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_ERX1]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_ERXER]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_EMDC]);
+	ConfigurePin(g_APinDescription[PIN_EMAC_EMDIO]);
+
+	// Initialize TRNG
+	pmc_enable_periph_clk(ID_TRNG);
+	TRNG->TRNG_IDR = TRNG_IDR_DATRDY;				// Disable all interrupts
+	TRNG->TRNG_CR = TRNG_CR_KEY(0x524e47) | TRNG_CR_ENABLE;	// Enable TRNG with security key (required)
 }
-#endif
 
 // End

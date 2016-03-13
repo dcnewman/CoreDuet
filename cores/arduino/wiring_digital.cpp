@@ -87,21 +87,19 @@ extern "C" void pinModeDuet(uint32_t ulPin, uint32_t ulMode, uint32_t debounceCu
 // This has now been optimised to speed it up, so it may no longer be used to enable the pullup resistor on an input pin (use mode INPUT_PULLUP instead).
 extern "C"  void digitalWrite(uint32_t ulPin, uint32_t ulVal)
 {
-	if (ulPin > MaxPinNumber)
+	if (ulPin <= MaxPinNumber)
 	{
-		return;
-	}
-
-	const PinDescription& pinDesc = g_APinDescription[ulPin];
-	if (pinDesc.ulPinType != PIO_NOT_A_PIN)
-	{
-		if (ulVal)		// we make use of the fact that LOW is zero and HIGH is nonzero
+		const PinDescription& pinDesc = g_APinDescription[ulPin];
+		if (pinDesc.ulPinType != PIO_NOT_A_PIN)
 		{
-			pinDesc.pPort->PIO_SODR = pinDesc.ulPin;
-		}
-		else
-		{
-			pinDesc.pPort->PIO_CODR = pinDesc.ulPin;
+			if (ulVal)		// we make use of the fact that LOW is zero and HIGH is nonzero
+			{
+				pinDesc.pPort->PIO_SODR = pinDesc.ulPin;
+			}
+			else
+			{
+				pinDesc.pPort->PIO_CODR = pinDesc.ulPin;
+			}
 		}
 	}
 }
@@ -119,8 +117,21 @@ extern "C" int digitalRead(uint32_t ulPin)
         return LOW ;
     }
 
-	return (PIO_Get(pinDesc.pPort, PIO_INPUT, pinDesc.ulPin ) == 1) ? HIGH : LOW;
+	return PIO_Get(pinDesc.pPort, PIO_INPUT, pinDesc.ulPin);
 }
+
+extern "C" void setPullup(uint32_t ulPin, bool en)
+{
+	if (ulPin <= MaxPinNumber)
+	{
+		const PinDescription& pinDesc = g_APinDescription[ulPin];
+		if (pinDesc.ulPinType != PIO_NOT_A_PIN)
+		{
+			PIO_PullUp(g_APinDescription[ulPin].pPort, g_APinDescription[ulPin].ulPin, (uint32_t)en) ;
+		}
+	}
+}
+
 
 #ifdef __cplusplus
 }
