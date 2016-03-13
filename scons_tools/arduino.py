@@ -306,6 +306,13 @@ def generate(env):
         are listed in $ARDUINO_HOME/hardware/arduino/$ARDUINO_ARCH/boards.txt
         '''
 
+        print 'env.SetDefault(ARDUINO_HOME="%s")' % os.environ.get("ARDUINO_HOME", "/usr/share/arduino")
+
+        print 'env.SetDefault(ARDUINO_ARCH="%s")' % os.environ.get("ARDUINO_ARCH", "sam")
+
+        print 'env.SetDefault(BOSSAC_PATH="%s")' % os.environ.get('BOSSAC_PATH', '')
+
+
         env.SetDefault(
             ARDUINO_HOME = os.environ.get("ARDUINO_HOME", "/usr/share/arduino"))
         env.SetDefault(
@@ -355,7 +362,8 @@ def generate(env):
                 os.symlink(arch_path, join(arduino_path, platform_dir))
 
         # Repository() so that we do not drop .o files in the actual Arduino app directories
-        Repository(hardware_path)
+        if symlinks:
+            Repository(hardware_path)
 
         # Read the boards.txt and platform.txt files
         try:
@@ -462,6 +470,7 @@ def generate(env):
                         cc_flags += clean_flags(info['build.usb_flags'],
                                                 replace_list, drop_list)
 
+                print 'env.Replace(CCFLAGS = "%s")' % cc_flags
                 env.Replace(CFLAGS = cc_flags)
 
             if 'recipe.cpp.o.pattern' in info:
@@ -482,6 +491,7 @@ def generate(env):
                         cxx_flags += clean_flags(info['build.usb_flags'],
                                                  replace_list, drop_list)
 
+                print 'env.Replace(CXXFLAGS = "%s")' % cxx_flags
                 env.Replace(CXXFLAGS = cxx_flags)
 
         # Generic info we can always set for the compiles
@@ -493,6 +503,8 @@ def generate(env):
             env.Append(CXXFLAGS = [ '-std=gnu++11' ],
                        CFLAGS   = [ '-std=gnu99' ] )
         else:
+            print 'env.Append(CXXFLAGS = ', [ '-O2', '-Wall', '-std=gnu++11', '-D__SAM3X8E__', '-mthumb' ], ')'
+            print 'env.Append(CFLAGS = ', [ '-O2', '-Wall', '-std=gnu99', '-D__SAM3X8E__', '-mthumb' ], ')'
             env.Append(CXXFLAGS = [ '-O2', '-Wall', '-std=gnu++11', '-D__SAM3X8E__', '-mthumb' ],
                        CFLAGS   = [ '-O2', '-Wall', '-std=gnu99', '-D__SAM3X8E__', '-mthumb' ] )
 
@@ -517,12 +529,26 @@ def generate(env):
             pid = None
 
         if not (vid is None):
+            print 'env.SetDefault( USB_VID = "%s" )' % vid
             env.SetDefault( USB_VID = vid )
         if not (pid is None):
+            print 'env.SetDefault( USB_PID = "%s" )' % pid
             env.SetDefault( USB_PID = pid )
 
         if 'build.variant_system_lib' in info:
+            print 'env.SetDefault (VARIANT_SYSLIB = "%s" )' % info['build.variant_system_lib']
             env.SetDefault( VARIANT_SYSLIB = info['build.variant_system_lib'] )
+
+        print 'env.SetDefault( BOARD = "%s" )' % board
+        print 'env.SetDefault( BOARD_NAME = "%s" )' % info['build.board']
+        print 'env.SetDefault( VERSION = "%d" )' % version
+        print 'env.SetDefault( VERSION_PATH = "%s" )' % version_path
+        print 'env.SetDefault( ARCH = "%s" )' % arch
+        print 'env.SetDefault( F_CPU = "%s" )' % info['build.f_cpu']
+        print 'env.SetDefault( M_CPU = "%s" )' % info['build.mcu']
+        print 'env.SetDefault( VARIANT = "%s" )' % info['build.variant']
+        print 'env.SetDefault( CORE = "%s" )' % info['build.core']
+        print 'env.SetDefault( BUILD_DIR = "%s" )' % join(build_dir, '$BOARD')
 
         env.SetDefault(
             BOARD        = board,
@@ -537,6 +563,8 @@ def generate(env):
             BUILD_DIR    = join(build_dir, '$BOARD') )
 
         if (arch != 'avr') and (version >= 160):
+            print 'env.SetDefault( VARIANT_PATH = "%s" )' % join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH', version_path, 'variants', '$VARIANT')
+            print 'env.SetDefault( CORE_DIR = "%s" )' %  join('$ARDUINO_HOME', 'hardware', '$ARDUINO_ARCH',version_path)
             env.SetDefault(
                 VARIANT_PATH = join('$ARDUINO_HOME', 'hardware',
                                     '$ARDUINO_ARCH', version_path,
@@ -553,12 +581,15 @@ def generate(env):
                              version_path, 'cores', 'arduino', 'USB'),
                         info['build.variant.path'] ] )
         else:
+            print 'env.SetDefault( VARIANT_PATH = "%s" )' % join('$ARDUINO_HOME', 'hardware', 'arduino', '$ARDUINO_ARCH', 'variants', '$VARIANT')
+            print 'env.SetDefault( CORE_DIR = "%s" )' % join('$ARDUINO_HOME', 'hardware', 'arduino', '$ARDUINO_ARCH')
             env.SetDefault(
                 VARIANT_PATH = join('$ARDUINO_HOME', 'hardware', 'arduino',
                                     '$ARDUINO_ARCH', 'variants', '$VARIANT'),
                 CORE_DIR     = join('$ARDUINO_HOME', 'hardware', 'arduino',
                                    '$ARDUINO_ARCH') )
             if 'build.variant_system_lib' in info:
+                print 'env.SetDefault( VARIANT_SYSLIB = "%s" )' % info['build.variant_system_lib']
                 env.SetDefault(
                     VARIANT_SYSLIB = info['build.variant_system_lib'])
             if doIncludes:
@@ -578,36 +609,48 @@ def generate(env):
             cpath = ''
 
         if arch == 'avr':
+            print 'env.Replace( RANLIB = "%s" )' % join(cpath, 'avr-ranlib')
             env.Replace(RANLIB = join(cpath, 'avr-ranlib'))
         elif arch == 'sam':
+            print 'env.Replace( RANLIB = "%s" )' % join(cpath, 'arm-none-eabi-ranlib')
             env.Replace(RANLIB = join(cpath, 'arm-none-eabi-ranlib'))
         else:
             raise Exception('Unsupported architecture, ' + arch)
 
         if 'compiler.c.cmd' in info:
+            print 'env.Replace( CC = "%s" )' % join(cpath, info['compiler.c.cmd'])
             env.Replace(CC = join(cpath, info['compiler.c.cmd']))
             if arch == 'avr':
+                print 'env.Replace( AS = "%s" )' % info['compiler.c.cmd']
                 env.Replace(AS = join(cpath, info['compiler.c.cmd']))
 
         if 'compiler.cpp.cmd' in info:
+            print 'env.Replace( CXX = "%s" )' %  join(cpath, info['compiler.cpp.cmd'])
             env.Replace(CXX = join(cpath, info['compiler.cpp.cmd']))
 
         if 'compiler.ar.cmd' in info:
+            print 'env.Replace( AR = "%s" )' % join(cpath, info['compiler.ar.cmd'])
             env.Replace(AR = join(cpath, info['compiler.ar.cmd']))
 
         if 'compiler.ar.flags' in info:
+            print 'env.Replace( ARFLAGS = "%s" )' % info['compiler.ar.flags']
             env.Replace(ARFLAGS = info['compiler.ar.flags'])
 
         if 'compiler.S.flags' in info:
+            print 'env.Replace( ASFLAGS = "%s" )' % info['compiler.S.flags']
             env.Replace(ASFLAGS = info['compiler.S.flags'])
 
         if 'compiler.size.cmd' in info:
+            print 'env.Replace( SIZE = "%s" )' % join(cpath, info['compiler.size.cmd'])
             env.Replace(SIZE = join(cpath, info['compiler.size.cmd']))
 
         if 'compiler.objcopy.cmd' in info:
+            print 'env.Replace( OBJCOPY = "%s" )' % join(cpath, info['compiler.objcopy.cmd'])
             env.Replace(OBJCOPY = join(cpath, info['compiler.objcopy.cmd']))
 
         if 'compiler.c.elf.cmd' in info:
+            print 'env.Replace( ELF = "%s" )' % join(cpath, info['compiler.c.elf.cmd'])
+            print 'env.Replace( LD = "%s" )' % join(cpath, info['compiler.c.elf.cmd'])
             env.Replace(ELF = join(cpath, info['compiler.c.elf.cmd']),
                         LD  = join(cpath, info['compiler.c.elf.cmd']))
 
@@ -646,6 +689,7 @@ def generate(env):
             s = s.replace('{object_files}', '$SOURCES')
             s = s.replace('"{build.path}/{archive_file}"', '')
             s = s.replace('{build.path}/{archive_file}', '')
+            print 'env.Append( BUILDERS = { \'Elf\' : Builder(action=\"%s\") } )' % s
             env.Append( BUILDERS = { 'Elf' : Builder(action=s) } )
 
         if (arch != 'avr') and (version >= 160):
@@ -662,6 +706,7 @@ def generate(env):
             s = s.replace('{build.path}/{build.project_name}.bin',   '$TARGET')
             s = s.replace('"{build.path}/{build.project_name}.hex"', '$TARGET')
             s = s.replace('{build.path}/{build.project_name}.hex',   '$TARGET')
+            print 'env.Append( BUILDERS = { \'Hex\' : Builder(action=\"%s\", suffix=\'.hex\', src_suffix=\'.elf\') } )' % s
             env.Append( BUILDERS = { 'Hex' : Builder(action=s, suffix='.hex', src_suffix='.elf') } )
 
         if 'recipe.S.o.pattern' in info:
@@ -674,6 +719,7 @@ def generate(env):
             s = s.replace('{object_file}',   '$TARGET')
             s = s.replace('"{build.path}/{archive_file}"', '')
             s = s.replace('{build.path}/{archive_file}', '')
+            print 'env.Replace( ASCOM = \"%s\", ASPPCOM = \"%s\" )' % (s, s)
             env.Replace( ASCOM = s, ASPPCOM = s )
 
         pattern = 'tools.' + prog + '.upload.pattern'
@@ -682,6 +728,7 @@ def generate(env):
             s = info[pattern]
             s = s.replace('"{build.path}/{build.project_name}.bin"', '$SOURCES')
             s = s.replace('{build.path}/{build.project_name}.bin',   '$SOURCES')
+            print 'env.Replace( UPLOAD = "%s" )' % s
             env.Replace( UPLOAD = s )
 
         return env

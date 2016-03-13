@@ -2,12 +2,11 @@ import os
 import sys
 from os.path import join, expanduser, isfile
 
-sys.path.append('./scons_tools')
+target_name       = 'libCoreDuet'
+scons_variant_dir = 'Release'
 
-target_name   = 'libCoreDuet'
-variant_dir   = 'Release'
-arduino_board = 'arduino_due_x'
-sam_arch      = 'sam3xa'
+sam_arch       = 'sam3xa'
+variant_syslib = 'libsam_sam3x8e_gcc_rel.a'
 
 # Generate a directory tree of the directories in the list dir
 # excluding any directory (and children) from the list ignore
@@ -21,6 +20,8 @@ def list_dirs(dir, ignore):
   return dir + list
 
 
+##########
+#
 # Load data from ~/.rrf_arduino_paths.py
 
 tmp_dict = {  }
@@ -32,9 +33,7 @@ site_file = home + '.rrf_arduino_paths.py'
 if isfile(site_file):
     with open(site_file) as f:
         exec(f.read(), tmp_dict)
-	keys_of_interest = [ 'arduino_version', 'arduino_arch',
-                         'arduino_home', 'arduino_tools',
-						 'bossac_path' ]
+	keys_of_interest = [ 'bossac_path', 'coreduet_home', 'gccarm_bin' ]
         for key in keys_of_interest:
             if key in tmp_dict:
                 if type(tmp_dict[key]) is str:
@@ -45,94 +44,28 @@ if isfile(site_file):
                     raise Exception(key + ' in ' + site_file + ' is of an ' + \
                                     'unsupported type')
 
-have_version = 'arduino_version' in globals()
-have_arch    = 'arduino_arch' in globals()
-have_home    = 'arduino_home' in globals()
-have_tools   = 'arduino_tools' in globals()
+have_bossac = 'bossac_path' in globals()
+have_home   = 'coreduet_home' in globals()
+have_bin    = 'gccarm_bin' in globals()
 
-if not (have_version and have_arch and have_tools):
-    raise Exception('You must first create the file ' + site_file + \
-                    ' before building.  See ' + \
-                    '~/sample_rrf_arduino_paths.py for an example.')
+if not (have_home and have_bin):
+  raise Exception('You must first create the file ' + site_file + \
+                  ' before building.  See ' + \
+                  '~/sample_rrf_arduino_paths.py for an example.')
 
+os.environ['COREDUET_HOME'] = coreduet_home
+os.environ['GCCARM_BIN'] = gccarm_bin
+if have_bossac:
+  os.environ['BOSSAC_PATH'] = bossac_path
 
-# We're only interested in SAM
-
-arduino_arch = arduino_arch.lower()
-if not (arduino_arch == 'sam'):
-    raise Exception('This collection of source files is SAM architecture only')
-
-if type(arduino_version) is str:
-    arduino_version = int(arduino_version)
-
-if (arduino_version >= 160) and (not have_tools):
-    raise Exception('For SAM/ARM and Arduino 1.6 or later, arduino_tools ' + \
-                    'must be set in ' + site_file)
-
-os.environ['ARDUINO_VERSION'] = str(arduino_version)
-os.environ['ARDUINO_HOME'] = arduino_home
-os.environ['ARDUINO_ARCH'] = arduino_arch
-if have_tools:
-    os.environ['ARDUINO_TOOLS'] = arduino_tools
-
-# Flags common to both compilers
-flags = [
-	  '-Dprintf=iprintf' ]
-
-# C & C++ compiler flags
-cflags = [ ] + flags
-cxxflags = [ ] + flags
-
+##########
+#
+# The source directories we will be building
+#
 core_dirs = [ 'cores',
               'libraries',
               'system',
               'variants' ]
-clean_dirs = [ join(variant_dir, i) for i in core_dirs ]
-
-# Include file directories
-include_paths = [
-    'cores/arduino',
-    'system/CMSIS/CMSIS/Include',
-    'variants/duet',
-    'system/CMSIS/Device/ATMEL',
-    join('system/CMSIS/Device/ATMEL', sam_arch, 'include'),
-    'system/libsam',
-    'system/libsam/include' ]
-
-# Initialize an environment
-VariantDir(variant_dir, './', 'duplicate=0')
-
-# Make a clean command remove the variant sources
-Clean('.', clean_dirs)
-
-env=Environment( tools = ['default', 'ar', 'g++', 'gcc', 'arduino'],
-                 toolpath = ['./scons_tools'],
-                 CPPPATH = include_paths,
-                 CCFLAGS = '',
-                 LIBPATH = ['.'] )
-
-drop_list = [
-   ('-DARDUINO-158', 0),
-   ('-DARDUINO_SAM_DUE', 0),
-   ('-DARDUINO_ARCH_SAM', 0),
-   ('-g', 0),
-   ('-o', 1),   # Remove -o and single argument following it
-   ('-w', 0),   # Yeah, Arduino suppresses all warnings!  They should fix their own!
-   ('-Os', 0) ] # Optimize for size?  On ARM?  Really?
-
-options = {
-    'symlinks' : False,
-	'includes' : False,
-    'cc_flags_drop_list'  : drop_list,
-    'cxx_flags_drop_list' : drop_list }
-
-# Now set up all the compiler paths and switches
-env.ConfigureBoard(arduino_version, arduino_arch, arduino_board, options)
-
-env.Replace( CPPPATH = include_paths )
-
-# Add in our compiler flags
-env.Append( CXXFLAGS = cxxflags, CFLAGS = cflags )
 
 # Source directories to ignore
 ignore_dirs = [
@@ -153,6 +86,99 @@ ignore_dirs = [
     'system/CMSIS/Device/ARM/ARMCM4',
     'system/CMSIS/Device/ARM/ARMCM0' ]
 
+##########
+#
+# Include file directories
+#
+include_paths = [
+    'cores/arduino',
+    'system/CMSIS/CMSIS/Include',
+    'variants/duet',
+    'system/CMSIS/Device/ATMEL',
+    join('system/CMSIS/Device/ATMEL', sam_arch, 'include'),
+    'system/libsam',
+    'system/libsam/include' ]
+
+##########
+#
+# Build a scons environment
+
+VariantDir(scons_variant_dir, './', 'duplicate=0')
+
+# Make the clean command remove the variant sources
+clean_dirs = [ join(scons_variant_dir, i) for i in core_dirs ]
+Clean('.', clean_dirs)
+
+env=Environment( tools = ['default', 'ar', 'g++', 'gcc'],
+                 CPPPATH = include_paths,
+                 LIBPATH = ['.'] )
+
+# Compiler flags shared by C and C++
+env.Replace( CCFLAGS = [
+    '-c',
+    '-Dprintf=iprintf',
+    '-D__SAM3X8E__',
+    '-DF_CPU=84000000L',
+    '-DARDUINO=158',
+    '-DUSB_VID=0x2341',
+    '-DUSB_PID=0x003e',
+    '-DUSBCON',
+    '-DUSB_MANUFACTURER="Unknown"',
+    '-DUSB_PRODUCT=\\"Arduino Due\\"' ] )
+
+# C compiler flags
+env.Replace( CFLAGS = [
+    '-ffunction-sections',
+    '-fdata-sections',
+    '-nostdlib',
+    '--param', 'max-inline-insns-single=500',
+    '-mcpu=cortex-m3',
+    '-O2',
+    '-Wall',
+    '-std=gnu99',
+    '-mthumb' ] )
+
+# C++ flags
+env.Replace( CXXFLAGS = [
+    '-ffunction-sections',
+    '-fdata-sections',
+    '-nostdlib',
+    '-fno-threadsafe-statics',
+    '--param', 'max-inline-insns-single=500',
+    '-fno-rtti',
+    '-fno-exceptions',
+    '-Dprintf=iprintf',
+    '-mcpu=cortex-m3',
+    '-O2',
+    '-Wall',
+    '-std=gnu++11',
+    '-mthumb' ] )
+
+env.SetDefault( COREDUET_HOME = coreduet_home )
+env.SetDefault( GCCARM_BIN = gccarm_bin )
+env.SetDefault( VARIANT_PATH = "$COREDUET_HOME/variants/duet" )
+env.SetDefault( VARIANT_SYSLIB = variant_syslib )
+if have_bossac:
+  env.SetDefault( BOSSAC_PATH = bossac_path )
+
+env.Replace( RANLIB = "$GCCARM_BIN/arm-none-eabi-ranlib" )
+env.Replace( CC = "$GCCARM_BIN/arm-none-eabi-gcc" )
+env.Replace( CXX = "$GCCARM_BIN/arm-none-eabi-g++" )
+env.Replace( AR = "$GCCARM_BIN/arm-none-eabi-ar" )
+env.Replace( ARFLAGS = "rcs" )
+env.Replace( ASFLAGS = "-c -g -x assembler-with-cpp" )
+env.Replace( SIZE = "$GCCARM_BIN/arm-none-eabi-size" )
+env.Replace( OBJCOPY = "$GCCARM_BIN/arm-none-eabi-objcopy" )
+env.Replace( ELF = "$GCCARM_BIN/arm-none-eabi-gcc" )
+env.Replace( LD = "$GCCARM_BIN/arm-none-eabi-gcc" )
+
+env.Append( BUILDERS = { 'Elf' : Builder(action='"$GCCARM_BIN/arm-none-eabi-gcc" -Os -Wl,--gc-sections -mcpu=cortex-m3 "-T$COREDUET_HOME/variants/duet/linker_scripts/gcc/flash.ld" "-Wl,-Map,$TARGET.map"  -o $TARGET $_LIBDIRFLAGS -mthumb -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--entry=Reset_Handler -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align -Wl,--warn-unresolved-symbols -Wl,--start-group cores/arduino/syscalls_sam3.o $_LIBFLAGS $SOURCES "$VARIANT_PATH/$VARIANT_SYSLIB"  -Wl,--end-group -lm -gcc') } )
+
+env.Append( BUILDERS = { 'Hex' : Builder(action='"$GCCARM_BIN/arm-none-eabi-objcopy" -O binary  $SOURCES $TARGET', suffix='.hex', src_suffix='.elf') } )
+
+if have_bossac:
+  env.Replace( UPLOAD = '"$BOSSAC_PATH" --port=$PORT -U $NATIVE -e -w -v -b $SOURCES -R' )
+
 # Generate the list of source directories to consider
 src_dirs = list_dirs(core_dirs, ignore_dirs)
 
@@ -160,10 +186,10 @@ src_dirs = list_dirs(core_dirs, ignore_dirs)
 srcs = []
 for dir in src_dirs:
     srcs += \
-        env.Glob(join(variant_dir, dir, '*.c')) + \
-        env.Glob(join(variant_dir, dir, '*.cpp')) + \
-        env.Glob(join(variant_dir, dir, '*.S'))
+        env.Glob(join(scons_variant_dir, dir, '*.c')) + \
+        env.Glob(join(scons_variant_dir, dir, '*.cpp')) + \
+        env.Glob(join(scons_variant_dir, dir, '*.S'))
 
 # Now generate the target library
 objs = env.Object(srcs)
-env.Library(join(variant_dir, target_name), objs)
+env.Library(join(scons_variant_dir, target_name), objs)
