@@ -19,7 +19,7 @@ This fork of the CoreDuet sources may also be built using the
 
 5. From this github repository, edit the file
 
-         scons_tools/sample_rrf_arduino_paths.py
+         sample_rrf_arduino_paths.py
 
    as appropriate to indicate the location of your installed Arduino
    application and gcc tools.  Then save this file to your home directory
