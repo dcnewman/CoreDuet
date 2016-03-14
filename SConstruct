@@ -15,7 +15,7 @@ def list_dirs(dir, ignore):
   list = []
   for d in dir:
     subdirs = [ d + '/' + name for name in os.listdir(d) if os.path.isdir(os.path.join(d, name)) and \
-                    (name[0] != '.') and (not (d + '/' + name) in ignore) ]
+    (name[0] != '.') and (not (d + '/' + name) in ignore) ]
     list += list_dirs(subdirs, ignore)
   return dir + list
 
@@ -28,12 +28,11 @@ tmp_dict = {  }
 home = expanduser('~')
 if home[-1] != '/':
     home += '/'
-site_file = home + '.rrf_arduino_paths.py'
-
-if isfile(site_file):
-    with open(site_file) as f:
-        exec(f.read(), tmp_dict)
-	keys_of_interest = [ 'bossac_path', 'coreduet_home', 'gccarm_bin' ]
+    site_file = home + '.rrf_arduino_paths.py'
+    if isfile(site_file):
+        with open(site_file) as f:
+            exec(f.read(), tmp_dict)
+        keys_of_interest = [ 'bossac_path', 'coreduet_home', 'gccarm_bin' ]
         for key in keys_of_interest:
             if key in tmp_dict:
                 if type(tmp_dict[key]) is str:
@@ -42,7 +41,7 @@ if isfile(site_file):
                     exec(key + '=' + str(tmp_dict[key]))
                 else:
                     raise Exception(key + ' in ' + site_file + ' is of an ' + \
-                                    'unsupported type')
+                        'unsupported type')
 
 have_bossac = 'bossac_path' in globals()
 have_home   = 'coreduet_home' in globals()
@@ -50,22 +49,23 @@ have_bin    = 'gccarm_bin' in globals()
 
 if not (have_home and have_bin):
   raise Exception('You must first create the file ' + site_file + \
-                  ' before building.  See ' + \
-                  '~/sample_rrf_arduino_paths.py for an example.')
+      ' before building.  See ' + \
+      '~/sample_rrf_arduino_paths.py for an example.')
 
 os.environ['COREDUET_HOME'] = coreduet_home
 os.environ['GCCARM_BIN'] = gccarm_bin
 if have_bossac:
-  os.environ['BOSSAC_PATH'] = bossac_path
+    os.environ['BOSSAC_PATH'] = bossac_path
 
 ##########
 #
 # The source directories we will be building
 #
-core_dirs = [ 'cores',
-              'libraries',
-              'system',
-              'variants' ]
+core_dirs = [
+    'cores',
+    'libraries',
+    'system',
+    'variants' ]
 
 # Source directories to ignore
 ignore_dirs = [
@@ -110,8 +110,8 @@ clean_dirs = [ join(scons_variant_dir, i) for i in core_dirs ]
 Clean('.', clean_dirs)
 
 env=Environment( tools = ['default', 'ar', 'g++', 'gcc'],
-                 CPPPATH = include_paths,
-                 LIBPATH = ['.'] )
+   CPPPATH = include_paths,
+   LIBPATH = ['.'] )
 
 # Compiler flags shared by C and C++
 env.Replace( CCFLAGS = [
@@ -186,9 +186,9 @@ src_dirs = list_dirs(core_dirs, ignore_dirs)
 srcs = []
 for dir in src_dirs:
     srcs += \
-        env.Glob(join(scons_variant_dir, dir, '*.c')) + \
-        env.Glob(join(scons_variant_dir, dir, '*.cpp')) + \
-        env.Glob(join(scons_variant_dir, dir, '*.S'))
+    env.Glob(join(scons_variant_dir, dir, '*.c')) + \
+    env.Glob(join(scons_variant_dir, dir, '*.cpp')) + \
+    env.Glob(join(scons_variant_dir, dir, '*.S'))
 
 # Now generate the target library
 objs = env.Object(srcs)
