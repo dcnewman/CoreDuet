@@ -28,19 +28,20 @@ tmp_dict = {  }
 home = expanduser('~')
 if home[-1] != '/':
     home += '/'
-    site_file = home + '.rrf_arduino_paths.py'
-    if isfile(site_file):
-        with open(site_file) as f:
-            exec(f.read(), tmp_dict)
-        keys_of_interest = [ 'bossac_path', 'coreduet_home', 'gccarm_bin' ]
-        for key in keys_of_interest:
-            if key in tmp_dict:
-                if type(tmp_dict[key]) is str:
-                    exec(key + '="' + tmp_dict[key] + '"')
-                elif type(tmp_dict[key]) is int:
-                    exec(key + '=' + str(tmp_dict[key]))
-                else:
-                    raise Exception(key + ' in ' + site_file + ' is of an ' + \
+    
+site_file = home + '.rrf_arduino_paths.py'
+if isfile(site_file):
+    with open(site_file) as f:
+        exec(f.read(), tmp_dict)
+    keys_of_interest = [ 'bossac_path', 'coreduet_home', 'gccarm_bin' ]
+    for key in keys_of_interest:
+        if key in tmp_dict:
+            if type(tmp_dict[key]) is str:
+                exec(key + '="' + tmp_dict[key] + '"')
+            elif type(tmp_dict[key]) is int:
+                exec(key + '=' + str(tmp_dict[key]))
+            else:
+                raise Exception(key + ' in ' + site_file + ' is of an ' + \
                         'unsupported type')
 
 have_bossac = 'bossac_path' in globals()
