@@ -27,8 +27,7 @@ static interruptCB callbacksPioD[32];
 
 /* Configure PIO interrupt sources */
 static void __initialize() {
-	int i;
-	for (i=0; i<32; i++) {
+	for (size_t i=0; i<32; i++) {
 		callbacksPioA[i] = NULL;
 		callbacksPioB[i] = NULL;
 		callbacksPioC[i] = NULL;
@@ -61,7 +60,7 @@ static void __initialize() {
 }
 
 
-void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
+extern "C" void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 {
 	static int enabled = 0;
 	if (!enabled) {
@@ -119,7 +118,7 @@ void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 	pio->PIO_IER = mask;
 }
 
-void detachInterrupt(uint32_t pin)
+extern "C" void detachInterrupt(uint32_t pin)
 {
 	// Retrieve pin information
 	Pio *pio = g_APinDescription[pin].pPort;
@@ -129,11 +128,13 @@ void detachInterrupt(uint32_t pin)
 	pio->PIO_IDR = mask;
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// Return true if we are in an interrupt service routine
+bool inInterrupt()
+{
+	return (__get_IPSR() & 0x01FF) != 0;
+}
 
-void PIOA_Handler(void) {
+extern "C" void PIOA_Handler(void) {
 	uint32_t isr = PIOA->PIO_ISR;
 	uint32_t i;
 	for (i=0; i<32; i++, isr>>=1) {
@@ -144,7 +145,7 @@ void PIOA_Handler(void) {
 	}
 }
 
-void PIOB_Handler(void) {
+extern "C" void PIOB_Handler(void) {
 	uint32_t isr = PIOB->PIO_ISR;
 	uint32_t i;
 	for (i=0; i<32; i++, isr>>=1) {
@@ -155,7 +156,7 @@ void PIOB_Handler(void) {
 	}
 }
 
-void PIOC_Handler(void) {
+extern "C" void PIOC_Handler(void) {
 	uint32_t isr = PIOC->PIO_ISR;
 	uint32_t i;
 	for (i=0; i<32; i++, isr>>=1) {
@@ -166,7 +167,7 @@ void PIOC_Handler(void) {
 	}
 }
 
-void PIOD_Handler(void) {
+extern "C" void PIOD_Handler(void) {
 	uint32_t isr = PIOD->PIO_ISR;
 	uint32_t i;
 	for (i=0; i<32; i++, isr>>=1) {
@@ -177,6 +178,4 @@ void PIOD_Handler(void) {
 	}
 }
 
-#ifdef __cplusplus
-}
-#endif
+// End
