@@ -49,21 +49,8 @@
 #include "pmc.h"
 #include "hsmci.h"
 #include "part.h"
+#include "..\..\..\libraries\storage\conf_sd_mmc.h"
 
-// Hacks to get this version of hsmci.c working in the context of an older version of ASF
-
-#define SAM3XA	SAM3XA_SERIES
-
-#define SD_MMC_HSMCI_MEM_CNT		1
-#define CONF_BOARD_SD_MMC_HSMCI		1
-#define SD_MMC_HSMCI_SLOT_0_SIZE	4
-
-inline uint32_t sysclk_get_cpu_hz()
-{
-	return SystemCoreClock;
-}
-
-// End hacks
 /**
  * \ingroup sam_drivers_hsmci
  * \defgroup sam_drivers_hsmci_internal High Speed MultiMedia Card Interface

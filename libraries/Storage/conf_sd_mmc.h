@@ -8,6 +8,7 @@
 #ifndef CONF_SD_MMC_H_
 #define CONF_SD_MMC_H_
 
+#define CONF_BOARD_SD_MMC_HSMCI		1
 #define SD_MMC_HSMCI_MEM_CNT        1
 #define SD_MMC_HSMCI_SLOT_0_SIZE    4
 
