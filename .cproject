@@ -84,6 +84,18 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.lib.release.686388427.176021544" name="/" resourcePath="libraries/SPI">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.lib.release.1018901312" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.lib.release" unusedChildren="">
+							<option id="cdt.managedbuild.option.gnu.cross.prefix.1182246319.1432841479" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix.1182246319"/>
+							<option id="cdt.managedbuild.option.gnu.cross.path.1595251843.332565859" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path.1595251843"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.141903796" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler.804734849"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.363700627" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler.880821276"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1858857092" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker.1834371208"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.2006322326" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker.1200213984"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1264320888" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver.204550189"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.2011628456" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler.622321091"/>
+						</toolChain>
+					</folderInfo>
 					<folderInfo id="cdt.managedbuild.config.gnu.cross.lib.release.686388427.1320833193" name="/" resourcePath="system/libsam/build_iar">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.lib.release.1020451047" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.lib.release" unusedChildren="">
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.1182246319.1358565701" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix.1182246319"/>
@@ -104,7 +116,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="system/CMSIS/Device/ATMEL/sam3xa/source/as_gcc|system/CMSIS/Device/ATMEL/sam3xa/source/gcc_atmel|system/CMSIS/Device/ATMEL/sam3xa/source/gcc_arm|system/CMSIS/Device/ATMEL/sam3xa/source/iar|system/libsam/build_iar|system/CMSIS/CMSIS/Lib/ARM|system/CMSIS/Device/ARM/ARMCM3/Source/Templates|system/CMSIS/CMSIS/DSP_Lib|system/CMSIS/Device/ATMEL/sam4s|system/CMSIS/Device/ATMEL/sam3u|system/CMSIS/Device/ATMEL/sam3sd8|system/CMSIS/Device/ATMEL/sam3s|system/CMSIS/Device/ATMEL/sam3n|system/CMSIS/Device/ARM/ARMCM4|system/CMSIS/Device/ARM/ARMCM0" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/SPI|libraries/HID|system/CMSIS/Device/ATMEL/sam3xa/source/as_gcc|system/CMSIS/Device/ATMEL/sam3xa/source/gcc_atmel|system/CMSIS/Device/ATMEL/sam3xa/source/gcc_arm|system/CMSIS/Device/ATMEL/sam3xa/source/iar|system/libsam/build_iar|system/CMSIS/CMSIS/Lib/ARM|system/CMSIS/Device/ARM/ARMCM3/Source/Templates|system/CMSIS/CMSIS/DSP_Lib|system/CMSIS/Device/ATMEL/sam4s|system/CMSIS/Device/ATMEL/sam3u|system/CMSIS/Device/ATMEL/sam3sd8|system/CMSIS/Device/ATMEL/sam3s|system/CMSIS/Device/ATMEL/sam3n|system/CMSIS/Device/ARM/ARMCM4|system/CMSIS/Device/ARM/ARMCM0" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
