@@ -49,7 +49,7 @@
 #include "pmc.h"
 #include "hsmci.h"
 #include "part.h"
-#include "..\..\..\libraries\storage\conf_sd_mmc.h"
+#include "../../libraries/Storage/conf_sd_mmc.h"
 
 /**
  * \ingroup sam_drivers_hsmci
