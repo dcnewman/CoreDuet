@@ -70,7 +70,8 @@ core_dirs = [
 
 # Source directories to ignore
 ignore_dirs = [
-    'libraries/SPI/examples',
+	'libraries/SPI',
+	'libraries/HID',
     'system/CMSIS/Device/ATMEL/sam3xa/source/as_gcc',
     'system/CMSIS/Device/ATMEL/sam3xa/source/gcc_atmel',
     'system/CMSIS/Device/ATMEL/sam3xa/source/gcc_arm',
@@ -190,6 +191,8 @@ for dir in src_dirs:
     env.Glob(join(scons_variant_dir, dir, '*.c')) + \
     env.Glob(join(scons_variant_dir, dir, '*.cpp')) + \
     env.Glob(join(scons_variant_dir, dir, '*.S'))
+
+env.Depends(srcs, 'Release/libraries/Storage/sd_mmc_mem.h')
 
 # Now generate the target library
 objs = env.Object(srcs)
