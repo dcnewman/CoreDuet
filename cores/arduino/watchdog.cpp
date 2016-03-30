@@ -20,7 +20,6 @@
 
 #include "watchdog.h"
 
-
 void watchdogEnable (uint32_t timeout)
 {
 	/* this assumes the slow clock is running at 32.768 kHz
@@ -44,12 +43,4 @@ void watchdogReset(void)
 	WDT_Restart (WDT);
 }
 
-
-extern "C"
-void _watchdogDefaultSetup (void)
-{
-	WDT_Disable (WDT);
-}
-void watchdogSetup (void) __attribute__ ((weak, alias("_watchdogDefaultSetup")));
-
-
+// End
