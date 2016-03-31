@@ -45,7 +45,6 @@
  */
 
 #include "compiler.h"
-#include "sd_mmc_protocol.h"
 #include "pmc.h"
 #include "hsmci.h"
 #include "part.h"

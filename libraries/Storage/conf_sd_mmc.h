@@ -20,18 +20,18 @@
 #else
 
 #ifndef SD_DETECT_PIN
-#define SD_DETECT_PIN				14 // card detect switch; needs pullup asserted
+#define SD_DETECT_PIN               14 // card detect switch; needs pullup asserted
 #endif
 
 #ifndef SD_DETECT_VAL
-#define SD_DETECT_VAL				0 // detect switch active low
+#define SD_DETECT_VAL               0 // detect switch active low
 #endif
 
 #ifndef SD_DETECT_PIO_ID
-#define SD_DETECT_PIO_ID			ID_PIOD
+#define SD_DETECT_PIO_ID            ID_PIOD
 #endif
 
-#define CONF_BOARD_SD_MMC_SPI		1
+#define CONF_BOARD_SD_MMC_SPI       1
 #define SD_MMC_0_CD_GPIO            SD_DETECT_PIN
 #define SD_MMC_0_CD_DETECT_VALUE    SD_DETECT_VAL
 #define SD_MMC_0_CD_PIO_ID          SD_DETECT_PIO_ID
