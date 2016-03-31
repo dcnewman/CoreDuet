@@ -49,6 +49,7 @@
  */
 #include "Arduino.h"
 #include <string.h>
+#include "conf_sd_mmc.h"
 #include "conf_mmc_spi.h"
 #include "sd_mmc_protocol.h"
 #include "sd_mmc_spi.h"

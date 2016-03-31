@@ -305,6 +305,10 @@ sd_mmc_err_t sdio_write_extended(uint8_t slot, uint8_t func_num, uint32_t addr,
 
 /** @} */
 
+#ifdef SD_MMC_SPI_MODE
+void sd_mmc_spi_init();
+#endif
+
 #ifdef __cplusplus
 }
 #endif

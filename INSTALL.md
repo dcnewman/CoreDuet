@@ -28,12 +28,18 @@ This fork of the CoreDuet sources may also be built using the
          ~/.rrf_arduino_paths.py
 
 6. From the top-level CoreDuet repository directory, build the
-   firmware with the command
+   library for Duet with the command
 
-         scons
-   	     
-   Once scons finishes a build, the resulting files will be in the directory
+         scons install
 
-        Release/
+   For RADDS, instead use the command
 
-   The final build product is the file `libCoreDuet.a`.
+        scons install platform=RADDS
+
+   Once scons finishes a build, the resulting library will be the file
+
+        Release/libCoreDuet.a
+
+   or
+
+        Release/libCoreRadds.a

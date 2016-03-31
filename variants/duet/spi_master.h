@@ -51,6 +51,10 @@
 
 #include "compiler.h"
 
+#ifdef __cplusplus
+extern "C"{
+#endif // __cplusplus
+
 //! Default Configuration of SPI Master Delay BCS
 #ifndef CONFIG_SPI_MASTER_DELAY_BCS
 #define CONFIG_SPI_MASTER_DELAY_BCS          0
@@ -521,6 +525,10 @@ static inline uint32_t spi_get_clock_divisor(Spi *p_spi)
 	return (p_spi->SPI_CSR[ul_pcs_ch] & SPI_CSR_SCBR_Msk) >> SPI_CSR_SCBR_Pos;
 }
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif // _SPI_MASTER_H_

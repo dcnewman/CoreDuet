@@ -2,8 +2,10 @@ import os
 import sys
 from os.path import join, expanduser, isfile
 
-target_name       = 'libCoreDuet'
-scons_variant_dir = 'Release'
+platform = ARGUMENTS.get('platform', 'duet')
+
+target_name       = 'libCore' + platform.title()
+scons_variant_dir = os.path.join('build', platform)
 
 sam_arch       = 'sam3xa'
 variant_syslib = 'libsam_sam3x8e_gcc_rel.a'
@@ -128,6 +130,18 @@ env.Replace( CCFLAGS = [
     '-DUSB_MANUFACTURER="Unknown"',
     '-DUSB_PRODUCT=\\"Arduino Due\\"' ] )
 
+if platform == 'radds':
+    env.Append( CCFLAGS = [
+        '-DSD_MMC_SPI_MODE',
+        '-DSPI_PIN=77',
+        '-DSPI_CHAN=0',
+        '-DSD_SS=4',
+        '-DSD_DETECT_PIN=14',
+        '-DSD_DETECT_VAL=0',
+        '-DSD_DETECT_PIO_ID=ID_PIOD',
+        '-DUSE_SAM3X_DMAX',
+        '-DDMA_TIMEOUT_COMPUTE' ] )
+
 # C compiler flags
 env.Replace( CFLAGS = [
     '-ffunction-sections',
@@ -192,8 +206,11 @@ for dir in src_dirs:
     env.Glob(join(scons_variant_dir, dir, '*.cpp')) + \
     env.Glob(join(scons_variant_dir, dir, '*.S'))
 
-env.Depends(srcs, 'Release/libraries/Storage/sd_mmc_mem.h')
+env.Depends(srcs, join(scons_variant_dir, 'libraries', 'Storage', 'sd_mmc_mem.h'))
 
 # Now generate the target library
 objs = env.Object(srcs)
-env.Library(join(scons_variant_dir, target_name), objs)
+lib = env.Library(join(scons_variant_dir, target_name), objs)
+
+env.Install('./Release', lib)
+env.Alias('install', './Release')

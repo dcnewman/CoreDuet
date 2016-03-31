@@ -49,8 +49,6 @@
 #ifndef CONF_SD_MMC_H_INCLUDED
 #define CONF_SD_MMC_H_INCLUDED
 
-#include "Pins.h"
-
 // Define to enable the SPI mode instead of Multimedia Card interface mode
 //#define SD_MMC_SPI_MODE
 

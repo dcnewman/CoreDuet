@@ -31,19 +31,15 @@
 #define SD_DETECT_PIO_ID            ID_PIOD
 #endif
 
+#define CONF_BOARD_SD_MMC_HSMCI     0
+#define SD_MMC_HSMCI_MEM_CNT        0
+#define SD_MMC_HSMCI_SLOT_0_SIZE    4
+
 #define CONF_BOARD_SD_MMC_SPI       1
 #define SD_MMC_0_CD_GPIO            SD_DETECT_PIN
 #define SD_MMC_0_CD_DETECT_VALUE    SD_DETECT_VAL
 #define SD_MMC_0_CD_PIO_ID          SD_DETECT_PIO_ID
 #define SD_MMC_SPI_MEM_CNT          1
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern void sd_mmc_spi_init();
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 
