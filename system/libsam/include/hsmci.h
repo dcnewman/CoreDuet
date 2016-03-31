@@ -48,7 +48,7 @@
 #define HSMCI_H_INCLUDED
 
 #include "compiler.h"
-#include "sd_mmc_protocol.h"
+#include "../../../libraries/Storage/sd_mmc_protocol.h"
 
 #ifdef __cplusplus
 extern "C" {
