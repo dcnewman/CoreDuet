@@ -15,15 +15,4 @@
 #define SD_MMC_0_CD_GPIO            13		// Arduino digital pin 13
 #define SD_MMC_0_CD_DETECT_VALUE    0
 
-inline uint32_t sysclk_get_cpu_hz()
-{
-	return SystemCoreClock;
-}
-
-extern void delay(uint32_t ms);				// in core
-inline void delay_ms(uint32_t ms)
-{
-	delay(ms);
-}
-
 #endif /* CONF_SD_MMC_H_ */

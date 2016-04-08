@@ -263,6 +263,29 @@ static bool sd_mmc_mci_install_mmc(void);
 //! @{
 #define SD_MMC_DEBOUNCE_TIMEOUT   1000 // Unit ms
 
+#if 1	// timeout functions for RepRapFirmware
+
+static uint32_t startTime;
+static bool timerActive = false;
+
+static inline void SD_MMC_START_TIMEOUT(void)
+{
+	startTime = millis();
+	timerActive = true;
+}
+
+static inline bool SD_MMC_IS_TIMEOUT(void)
+{
+	return !timerActive || millis() - startTime >= SD_MMC_DEBOUNCE_TIMEOUT;
+}
+
+static inline void SD_MMC_STOP_TIMEOUT(void)
+{
+	timerActive = false;
+}
+
+#else
+
 #if XMEGA || defined(REPRAPFIRMWARE)
 #  define SD_MMC_START_TIMEOUT()  delay_ms(SD_MMC_DEBOUNCE_TIMEOUT)
 #  define SD_MMC_IS_TIMEOUT()     true
@@ -328,6 +351,8 @@ static inline void SD_MMC_STOP_TIMEOUT(void)
 	}
 }
 #endif	//SAM
+
+#endif	//ReprapFirmware
 //! @}
 
 /**
