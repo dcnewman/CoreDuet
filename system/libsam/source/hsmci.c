@@ -50,6 +50,16 @@
 #include "part.h"
 #include "../../../libraries/Storage/conf_sd_mmc.h"
 
+#if 1
+
+// dc42 added this because we don't have the sysclk module in this core
+inline uint32_t sysclk_get_cpu_hz()
+{
+	return VARIANT_MCK;
+}
+
+#endif
+
 /**
  * \ingroup sam_drivers_hsmci
  * \defgroup sam_drivers_hsmci_internal High Speed MultiMedia Card Interface

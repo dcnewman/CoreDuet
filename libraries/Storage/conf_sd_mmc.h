@@ -43,15 +43,4 @@
 
 #endif
 
-inline uint32_t sysclk_get_cpu_hz()
-{
-	return SystemCoreClock;
-}
-
-extern void delay(uint32_t ms);				// in core
-inline void delay_ms(uint32_t ms)
-{
-	delay(ms);
-}
-
 #endif /* CONF_SD_MMC_H_ */
