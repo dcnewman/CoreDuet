@@ -8,7 +8,6 @@ target_name       = 'libCore' + platform.title()
 scons_variant_dir = os.path.join('build', platform)
 
 sam_arch       = 'sam3xa'
-variant_syslib = 'libsam_sam3x8e_gcc_rel.a'
 
 # Generate a directory tree of the directories in the list dir
 # excluding any directory (and children) from the list ignore
@@ -172,8 +171,6 @@ env.Replace( CXXFLAGS = [
 
 env.SetDefault( COREDUET_HOME = coreduet_home )
 env.SetDefault( GCCARM_BIN = gccarm_bin )
-env.SetDefault( VARIANT_PATH = "$COREDUET_HOME/variants/duet" )
-env.SetDefault( VARIANT_SYSLIB = variant_syslib )
 if have_bossac:
   env.SetDefault( BOSSAC_PATH = bossac_path )
 
@@ -188,7 +185,7 @@ env.Replace( OBJCOPY = "$GCCARM_BIN/arm-none-eabi-objcopy" )
 env.Replace( ELF = "$GCCARM_BIN/arm-none-eabi-gcc" )
 env.Replace( LD = "$GCCARM_BIN/arm-none-eabi-gcc" )
 
-env.Append( BUILDERS = { 'Elf' : Builder(action='"$GCCARM_BIN/arm-none-eabi-gcc" -Os -Wl,--gc-sections -mcpu=cortex-m3 "-T$COREDUET_HOME/variants/duet/linker_scripts/gcc/flash.ld" "-Wl,-Map,CoreDuet.map"  -o $TARGET $_LIBDIRFLAGS -mthumb -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--entry=Reset_Handler -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align -Wl,--warn-unresolved-symbols -Wl,--start-group $COREDUET_HOME/Release/cores/arduino/syscalls_sam3.o $_LIBFLAGS $SOURCES "$VARIANT_PATH/$VARIANT_SYSLIB"  -Wl,--end-group -lm -gcc') } )
+env.Append( BUILDERS = { 'Elf' : Builder(action='"$GCCARM_BIN/arm-none-eabi-gcc" -Os -Wl,--gc-sections -mcpu=cortex-m3 "-T$COREDUET_HOME/variants/duet/linker_scripts/gcc/flash.ld" "-Wl,-Map,CoreDuet.map"  -o $TARGET $_LIBDIRFLAGS -mthumb -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--entry=Reset_Handler -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align -Wl,--warn-unresolved-symbols -Wl,--start-group $COREDUET_HOME/Release/cores/arduino/syscalls_sam3.o $_LIBFLAGS $SOURCES  -Wl,--end-group -lm -gcc') } )
 
 env.Append( BUILDERS = { 'Hex' : Builder(action='"$GCCARM_BIN/arm-none-eabi-objcopy" -O binary  $SOURCES $TARGET', suffix='.hex', src_suffix='.elf') } )
 
