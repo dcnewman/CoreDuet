@@ -138,7 +138,7 @@ if platform == 'radds':
         '-DSD_DETECT_PIN=14',
         '-DSD_DETECT_VAL=0',
         '-DSD_DETECT_PIO_ID=ID_PIOD',
-        '-DUSE_SAM3X_DMAX',
+        '-DUSE_SAM3X_DMAC',
         '-DDMA_TIMEOUT_COMPUTE' ] )
 
 # C compiler flags
